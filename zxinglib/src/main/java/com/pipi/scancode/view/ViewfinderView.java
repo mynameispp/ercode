@@ -164,7 +164,6 @@ public final class ViewfinderView extends View {
         } else {
             scannerStart = frame.top;
         }
-        Log.e("jjjjjj",scannerStart+"==="+scannerEnd);
         this.paint.setShader(null);
     }
 

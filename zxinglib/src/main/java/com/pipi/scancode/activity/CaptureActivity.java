@@ -1,11 +1,9 @@
 package com.pipi.scancode.activity;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
@@ -20,12 +18,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Binarizer;
@@ -46,67 +41,42 @@ import com.pipi.scancode.decoding.RGBLuminanceSource;
 import com.pipi.scancode.view.ViewfinderView;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
-public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.Callback {
+public abstract class CaptureActivity extends AppCompatActivity implements SurfaceHolder.Callback {
     private static final String TAG = "CaptureActivity";
-
     private static final int REQUEST_CODE_SCAN_GALLERY = 100;
-
     private CaptureActivityHandler handler;
-
-    private ViewfinderView viewfinderView;
-
-    private ImageView back;
-
+    public ViewfinderView viewfinderView;
     private boolean hasSurface;
-
     private Vector<BarcodeFormat> decodeFormats;
-
     private String characterSet;
-
     private InactivityTimer inactivityTimer;
-
     private MediaPlayer mediaPlayer;
-
     private boolean playBeep;
-
     private static final float BEEP_VOLUME = 0.1F;
-
     private boolean vibrate;
-
-    private ProgressDialog mProgress;
-
-    private String photo_path;
-
     private Bitmap scanBitmap;
-
     public static final int RESULT_CODE_QR_SCAN = 161;
-
     public static final String INTENT_EXTRA_KEY_QR_SCAN = "qr_scan_result";
-
     private static final long VIBRATE_DURATION = 200L;
+
+    public abstract int getContentView();
+
+    public abstract void inittView();
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scanner);
+        setContentView(getContentView());
         CameraManager.init((Context) getApplication());
-        this.viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_content);
-        this.back = (ImageView) findViewById(R.id.scanner_toolbar_back);
-        this.back.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                CaptureActivity.this.finish();
-            }
-        });
         this.hasSurface = false;
         this.inactivityTimer = new InactivityTimer((Activity) this);
+        inittView();
     }
 
-    private void addToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-    }
 
     public boolean onCreateOptionsMenu(Menu menu) {
         return true;
@@ -116,47 +86,63 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
         return super.onOptionsItemSelected(item);
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == -1) {
-            Cursor cursor;
-            switch (requestCode) {
-                case 100:
-                    cursor = getContentResolver().query(data.getData(), null, null, null, null);
-                    if (cursor.moveToFirst())
-                        this.photo_path = cursor.getString(cursor.getColumnIndex("_data"));
-                    cursor.close();
-                    this.mProgress = new ProgressDialog((Context) this);
-                    this.mProgress.setMessage("");
-                    this.mProgress.setCancelable(false);
-                    this.mProgress.show();
-                    (new Thread(new Runnable() {
-                        public void run() {
-                            Result result = CaptureActivity.this.scanningImage(CaptureActivity.this.photo_path);
-                            if (result != null) {
-                                Intent resultIntent = new Intent();
-                                Bundle bundle = new Bundle();
-                                bundle.putString(INTENT_EXTRA_KEY_QR_SCAN, result.getText());
-                                resultIntent.putExtras(bundle);
-                                CaptureActivity.this.setResult(RESULT_CODE_QR_SCAN, resultIntent);
-                            } else {
-                                Message m = CaptureActivity.this.handler.obtainMessage();
-                                m.what = R.id.decode_failed;
-                                m.obj = "Scan failed!";
-                                CaptureActivity.this.handler.sendMessage(m);
-                            }
-                        }
-                    })).start();
-                    break;
-            }
+
+    /**
+     * 传入本地二维码图片路径
+     *
+     * @param path
+     */
+    public void scanAlbunUrl(final String path) {
+        if (TextUtils.isEmpty(path)) {
+            Toast.makeText(this, "图片路径错误", Toast.LENGTH_SHORT).show();
+            return;
         }
-        super.onActivityResult(requestCode, resultCode, data);
+        (new Thread(new Runnable() {
+            public void run() {
+                Result result = CaptureActivity.this.scanningImage(path);
+                if (result != null) {
+                    Intent resultIntent = new Intent();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(INTENT_EXTRA_KEY_QR_SCAN, result.getText());
+                    resultIntent.putExtras(bundle);
+                    CaptureActivity.this.setResult(RESULT_CODE_QR_SCAN, resultIntent);
+                    finish();
+                } else {
+                    Message m = CaptureActivity.this.handler.obtainMessage();
+                    m.what = R.id.decode_failed;
+                    m.obj = "Scan failed!";
+                    CaptureActivity.this.handler.sendMessage(m);
+                }
+            }
+        })).start();
     }
 
     public Result scanningImage(String path) {
         if (TextUtils.isEmpty(path))
             return null;
-        Hashtable<DecodeHintType, String> hints = new Hashtable<>();
-        hints.put(DecodeHintType.CHARACTER_SET, "UTF8");
+        Hashtable<DecodeHintType, Object> HINTS = new Hashtable<>();
+        List<BarcodeFormat> allFormats = new ArrayList<>();
+        allFormats.add(BarcodeFormat.AZTEC);
+        allFormats.add(BarcodeFormat.CODABAR);
+        allFormats.add(BarcodeFormat.CODE_39);
+        allFormats.add(BarcodeFormat.CODE_93);
+        allFormats.add(BarcodeFormat.CODE_128);
+        allFormats.add(BarcodeFormat.DATA_MATRIX);
+        allFormats.add(BarcodeFormat.EAN_8);
+        allFormats.add(BarcodeFormat.EAN_13);
+        allFormats.add(BarcodeFormat.ITF);
+        allFormats.add(BarcodeFormat.MAXICODE);
+        allFormats.add(BarcodeFormat.PDF_417);
+        allFormats.add(BarcodeFormat.QR_CODE);
+        allFormats.add(BarcodeFormat.RSS_14);
+        allFormats.add(BarcodeFormat.RSS_EXPANDED);
+        allFormats.add(BarcodeFormat.UPC_A);
+        allFormats.add(BarcodeFormat.UPC_E);
+        allFormats.add(BarcodeFormat.UPC_EAN_EXTENSION);
+        HINTS.put(DecodeHintType.TRY_HARDER, BarcodeFormat.QR_CODE);
+        HINTS.put(DecodeHintType.POSSIBLE_FORMATS, allFormats);
+        HINTS.put(DecodeHintType.CHARACTER_SET, "utf-8");
+//        hints.put(DecodeHintType.CHARACTER_SET, "UTF8");
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         this.scanBitmap = BitmapFactory.decodeFile(path, options);
@@ -170,7 +156,7 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
         BinaryBitmap bitmap1 = new BinaryBitmap((Binarizer) new HybridBinarizer((LuminanceSource) source));
         QRCodeReader reader = new QRCodeReader();
         try {
-            return reader.decode(bitmap1, hints);
+            return reader.decode(bitmap1, HINTS);
         } catch (NotFoundException e) {
             e.printStackTrace();
         } catch (ChecksumException e) {

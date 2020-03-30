@@ -25,7 +25,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.scan_code).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.VIBRATE};
+                String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.VIBRATE,Manifest.permission.READ_EXTERNAL_STORAGE
+                        ,Manifest.permission.WRITE_EXTERNAL_STORAGE};
                 //申请权限，其中RC_PERMISSION是权限申请码，用来标志权限申请的
                 ActivityCompat.requestPermissions(MainActivity.this, permissions, 100);
             }
@@ -36,10 +37,12 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == 100 && grantResults.length == 2
+        if (requestCode == 100 && grantResults.length == 4
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-            startActivityForResult(new Intent(this, CaptureActivity.class),1);
+                && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                && grantResults[2] == PackageManager.PERMISSION_GRANTED
+                && grantResults[3] == PackageManager.PERMISSION_GRANTED) {
+            startActivityForResult(new Intent(this, MyCaptureActivity.class),1);
         } else {
             result.setText("获取权限失败");
         }
