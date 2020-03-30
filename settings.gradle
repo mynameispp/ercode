@@ -1,0 +1,2 @@
+include ':zxinglib', ':demo'
+rootProject.name='ScanCode'
