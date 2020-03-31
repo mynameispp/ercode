@@ -89,6 +89,7 @@ public final class ViewfinderView extends View {
     }
 
     public void onDraw(Canvas canvas) {
+        //控制扫码框位置
         Rect frame = CameraManager.get().getFramingRect();
         if (frame == null)
             return;
@@ -129,6 +130,11 @@ public final class ViewfinderView extends View {
         }
     }
 
+    /**
+     * 文字提示
+     * @param canvas
+     * @param frame
+     */
     private void drawTextInfo(Canvas canvas, Rect frame) {
         this.paint.setColor(this.labelTextColor);
         this.paint.setTextSize(this.labelTextSize);
@@ -136,6 +142,11 @@ public final class ViewfinderView extends View {
         canvas.drawText(this.labelText, (frame.left + frame.width() / 2), (frame.top - 40), this.paint);
     }
 
+    /**
+     * 扫码框四边线条和边角
+     * @param canvas
+     * @param frame
+     */
     private void drawCorner(Canvas canvas, Rect frame) {
         this.paint.setColor(this.cornerColor);
         int top=frame.top;
@@ -150,6 +161,11 @@ public final class ViewfinderView extends View {
         canvas.drawRect((frame.right - 40), (bottom - 8), frame.right, bottom, this.paint);
     }
 
+    /**
+     * 扫码条
+     * @param canvas
+     * @param frame
+     */
     private void drawLaserScanner(Canvas canvas, Rect frame) {
         this.paint.setColor(this.laserColor);
 //        LinearGradient linearGradient = new LinearGradient(frame.left, scannerStart, frame.left, (scannerStart + 10), shadeColor(this.laserColor), this.laserColor, Shader.TileMode.MIRROR);
@@ -173,6 +189,11 @@ public final class ViewfinderView extends View {
         return Integer.valueOf(result, 16).intValue();
     }
 
+    /**
+     * 扫码框大小
+     * @param canvas
+     * @param frame
+     */
     private void drawFrame(Canvas canvas, Rect frame) {
         this.paint.setColor(this.frameColor);
         int top=frame.top;

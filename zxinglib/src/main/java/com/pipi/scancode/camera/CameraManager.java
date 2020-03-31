@@ -146,8 +146,8 @@ public final class CameraManager {
             } else {
                 width = height;
             }
-            int leftOffset = (screenResolution.x - width) / 2;
-            int topOffset = (screenResolution.y - height) / 2-300;
+            int leftOffset = (screenResolution.x - width) / 2;//扫码框横向居中
+            int topOffset = (screenResolution.y - height) / 2 - 300;//扫码框距离布局中间向上300dp
             this.framingRect = new Rect(leftOffset, topOffset, leftOffset + width, topOffset + height);
         }
         return this.framingRect;
