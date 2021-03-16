@@ -1,4 +1,4 @@
-package com.pipi.demo.tools;
+package com.pipi.scancode.tools;
 
 import android.content.ContentUris;
 import android.content.Context;

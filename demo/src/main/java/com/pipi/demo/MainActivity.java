@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,6 +23,7 @@ import android.widget.Toast;
 
 import com.pipi.scancode.activity.CaptureActivity;
 import com.pipi.scancode.encoding.EncodingHandler;
+import com.pipi.scancode.tools.VersionUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -94,7 +94,11 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         try {
                             SAVE_PIC_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath() + "/";
-                            saveBitmap(view.getContext(),erCodeBitmap,System.currentTimeMillis() + ".jpg");
+                            if (VersionUtils.isTargetQ(view.getContext())) {
+                                saveBitmap(view.getContext(), erCodeBitmap, System.currentTimeMillis() + ".jpg");
+                            } else {
+                                saveFile(erCodeBitmap, SAVE_PIC_PATH, System.currentTimeMillis() + ".jpg");
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                             myHandler.sendEmptyMessage(-1);
@@ -158,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void saveBitmap(Context context, Bitmap  bitmap, String bitName) {
+    public void saveBitmap(Context context, Bitmap bitmap, String bitName) {
 
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.DESCRIPTION, "二维码");
@@ -180,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
                 myHandler.sendEmptyMessage(-1);
-            }finally {
+            } finally {
                 try {
                     if (os != null) {
                         os.close();

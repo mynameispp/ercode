@@ -11,9 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.pipi.demo.tools.EaseFileUtils;
-import com.pipi.demo.tools.VersionUtils;
 import com.pipi.scancode.activity.CaptureActivity;
+import com.pipi.scancode.tools.EaseFileUtils;
+import com.pipi.scancode.tools.VersionUtils;
 import com.pipi.scancode.view.ViewfinderView;
 
 import java.io.File;
@@ -44,9 +44,9 @@ public class MyCaptureActivity extends CaptureActivity implements SurfaceHolder.
             public void onClick(View view) {
                 //本地图片，打开本地相册，建议扫码是让用户裁剪二维码
                 Intent intent = null;
-                if(VersionUtils.isTargetQ(view.getContext())) {
+                if (VersionUtils.isTargetQ(view.getContext())) {
                     intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                }else {
+                } else {
                     intent = new Intent(Intent.ACTION_GET_CONTENT);
                 }
                 intent.setType("image/*");
@@ -54,6 +54,7 @@ public class MyCaptureActivity extends CaptureActivity implements SurfaceHolder.
             }
         });
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -61,6 +62,7 @@ public class MyCaptureActivity extends CaptureActivity implements SurfaceHolder.
             onActivityResultForLocalPhotos(data);
         }
     }
+
     /**
      * 选择本地图片处理结果
      *
@@ -71,10 +73,10 @@ public class MyCaptureActivity extends CaptureActivity implements SurfaceHolder.
             Uri selectedImage = data.getData();
             if (selectedImage != null) {
                 String filePath = EaseFileUtils.getFilePath(this, selectedImage);
-                Log.e("图片路径",filePath);
+                Log.e("图片路径", filePath);
                 if (!TextUtils.isEmpty(filePath) && new File(filePath).exists()) {
                     scanAlbunUrl(filePath);
-                }else {
+                } else {
                     Toast.makeText(this, "扫描失败", Toast.LENGTH_SHORT).show();
                 }
             }

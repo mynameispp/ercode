@@ -1,4 +1,4 @@
-package com.pipi.demo.tools;
+package com.pipi.scancode.tools;
 
 import android.app.Activity;
 import android.content.Context;
@@ -98,7 +98,7 @@ public class FileUtils {
         Intent intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        intent.setAction(android.content.Intent.ACTION_VIEW);
+        intent.setAction(Intent.ACTION_VIEW);
         /* set intent's file and MimeType */
         intent.setDataAndType(uri, type);
         try {
