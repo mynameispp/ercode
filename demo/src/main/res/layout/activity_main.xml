@@ -4,14 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     tools:context=".MainActivity">
 
     <Button
         android:id="@+id/scan_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:text="扫码"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -20,7 +21,48 @@
         android:id="@+id/scan_code_result"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="扫码结果"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@id/scan_code" />
+
+    <EditText
+        android:id="@+id/create_code_ed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:hint="输入内容"
+        android:padding="10dp"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintTop_toBottomOf="@id/scan_code_result" />
+
+    <Button
+        android:id="@+id/create_code_img_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="内容生成二维码"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/create_code_ed" />
+
+    <ImageView
+        android:id="@+id/create_code_img"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/create_code_img_btn" />
+
+    <Button
+        android:id="@+id/save_create_code_img_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="保存二维码图片"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/create_code_img" />
 </androidx.constraintlayout.widget.ConstraintLayout>
