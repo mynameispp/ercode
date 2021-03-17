@@ -22,27 +22,32 @@ public final class EncodingHandler {
 
     /**
      * 创建二维码图片
-     * @param str 内容
+     *
+     * @param str            内容
      * @param widthAndHeight 宽高
      * @return
-     * @throws WriterException
      */
-    public static Bitmap createQRCode(String str, int widthAndHeight) throws WriterException {
-        Hashtable<EncodeHintType, String> hints = new Hashtable<>();
-        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
-        BitMatrix matrix = (new MultiFormatWriter()).encode(str, BarcodeFormat.QR_CODE, widthAndHeight, widthAndHeight);
-        int width = matrix.getWidth();
-        int height = matrix.getHeight();
-        int[] pixels = new int[width * height];
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (matrix.get(x, y))
-                    pixels[y * width + x] = -16777216;
+    public static Bitmap createQRCode(String str, int widthAndHeight) {
+        try {
+            Hashtable<EncodeHintType, String> hints = new Hashtable<>();
+            hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+            BitMatrix matrix = (new MultiFormatWriter()).encode(str, BarcodeFormat.QR_CODE, widthAndHeight, widthAndHeight);
+            int width = matrix.getWidth();
+            int height = matrix.getHeight();
+            int[] pixels = new int[width * height];
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    if (matrix.get(x, y))
+                        pixels[y * width + x] = -16777216;
+                }
             }
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+            return bitmap;
+        } catch (WriterException e) {
+            e.printStackTrace();
+            return null;
         }
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-        return bitmap;
     }
 
     /**
@@ -58,9 +63,9 @@ public final class EncodingHandler {
      * @param color_white            白色色块
      * @return BitMap
      */
-    public static Bitmap createQRCodeBitmap(String content, int width,int height,
-                                            String character_set,String error_correction_level,
-                                            String margin,int color_black, int color_white) {
+    public static Bitmap createQRCodeBitmap(String content, int width, int height,
+                                            String character_set, String error_correction_level,
+                                            String margin, int color_black, int color_white) {
         // 字符串内容判空
         if (TextUtils.isEmpty(content)) {
             return null;
@@ -137,8 +142,8 @@ public final class EncodingHandler {
             return null;
         }
     }
+
     /**
-     *
      * @param content                字符串内容
      * @param width                  二维码宽度
      * @param height                 二维码高度
@@ -152,8 +157,8 @@ public final class EncodingHandler {
      * @return
      */
     public static Bitmap createQRCodeBitmap(String content, int width, int height, String character_set,
-                                            String error_correction_level,String margin, int color_black,
-                                            int color_white,Bitmap logoBitmap, float logoPercent) {
+                                            String error_correction_level, String margin, int color_black,
+                                            int color_white, Bitmap logoBitmap, float logoPercent) {
         // 字符串内容判空
         if (TextUtils.isEmpty(content)) {
             return null;
@@ -198,7 +203,7 @@ public final class EncodingHandler {
             bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
 
             /** 5.为二维码添加logo图标 */
-            if(logoBitmap != null){
+            if (logoBitmap != null) {
                 return addLogo(bitmap, logoBitmap, logoPercent);
             }
             return bitmap;
@@ -241,20 +246,20 @@ public final class EncodingHandler {
     /**
      * 向二维码中间添加logo图片(图片合成)
      *
-     * @param srcBitmap 原图片（生成的简单二维码图片）
-     * @param logoBitmap logo图片
+     * @param srcBitmap   原图片（生成的简单二维码图片）
+     * @param logoBitmap  logo图片
      * @param logoPercent 百分比 (用于调整logo图片在原图片中的显示大小, 取值范围[0,1] )
      * @return
      */
-    private static Bitmap addLogo(Bitmap srcBitmap,  Bitmap logoBitmap, float logoPercent){
-        if(srcBitmap == null){
+    private static Bitmap addLogo(Bitmap srcBitmap, Bitmap logoBitmap, float logoPercent) {
+        if (srcBitmap == null) {
             return null;
         }
-        if(logoBitmap == null){
+        if (logoBitmap == null) {
             return srcBitmap;
         }
         //传值不合法时使用0.2F
-        if(logoPercent < 0F || logoPercent > 1F){
+        if (logoPercent < 0F || logoPercent > 1F) {
             logoPercent = 0.2F;
         }
 
@@ -272,8 +277,8 @@ public final class EncodingHandler {
         Bitmap bitmap = Bitmap.createBitmap(srcWidth, srcHeight, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         canvas.drawBitmap(srcBitmap, 0, 0, null);
-        canvas.scale(scaleWidth, scaleHeight, srcWidth/2, srcHeight/2);
-        canvas.drawBitmap(logoBitmap, srcWidth/2 - logoWidth/2, srcHeight/2 - logoHeight/2, null);
+        canvas.scale(scaleWidth, scaleHeight, srcWidth / 2, srcHeight / 2);
+        canvas.drawBitmap(logoBitmap, srcWidth / 2 - logoWidth / 2, srcHeight / 2 - logoHeight / 2, null);
 
         return bitmap;
     }
