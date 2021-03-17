@@ -4,27 +4,23 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.ComposeShader;
-import android.graphics.LinearGradient;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.graphics.SweepGradient;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import com.google.zxing.ResultPoint;
 import com.pipi.scancode.R;
 import com.pipi.scancode.camera.CameraManager;
+
 import java.util.Collection;
 import java.util.HashSet;
 
 public final class ViewfinderView extends View {
-    private static final int[] SCANNER_ALPHA = new int[] { 0, 64, 128, 192, 255, 192, 128, 64 };
+    private static final int[] SCANNER_ALPHA = new int[]{0, 64, 128, 192, 255, 192, 128, 64};
 
     private static final long ANIMATION_DELAY = 10L;
 
@@ -132,6 +128,7 @@ public final class ViewfinderView extends View {
 
     /**
      * 文字提示
+     *
      * @param canvas
      * @param frame
      */
@@ -144,25 +141,31 @@ public final class ViewfinderView extends View {
 
     /**
      * 扫码框四边线条和边角
+     *
      * @param canvas
      * @param frame
      */
     private void drawCorner(Canvas canvas, Rect frame) {
         this.paint.setColor(this.cornerColor);
-        int top=frame.top;
-        int bottom=frame.bottom;
+        int top = frame.top;
+        int bottom = frame.bottom;
+        //左上角
         canvas.drawRect(frame.left, top, (frame.left + 8), (top + 40), this.paint);
         canvas.drawRect(frame.left, top, (frame.left + 40), (top + 8), this.paint);
-        canvas.drawRect((frame.right - 8), top, frame.right, (top + 40), this.paint);
+        //右上角
+        canvas.drawRect((frame.right - 8), top, frame.right + 1, (top + 40), this.paint);
         canvas.drawRect((frame.right - 40), top, frame.right, (top + 8), this.paint);
-        canvas.drawRect(frame.left, (bottom - 8), (frame.left + 40), bottom, this.paint);
+        //左下角
+        canvas.drawRect(frame.left, (bottom - 8), (frame.left + 40), bottom + 1, this.paint);
         canvas.drawRect(frame.left, (bottom - 40), (frame.left + 8), bottom, this.paint);
-        canvas.drawRect((frame.right - 8), (bottom - 40), frame.right, bottom, this.paint);
-        canvas.drawRect((frame.right - 40), (bottom - 8), frame.right, bottom, this.paint);
+        //右下角
+        canvas.drawRect((frame.right - 8), (bottom - 40), frame.right + 1, bottom, this.paint);
+        canvas.drawRect((frame.right - 40), (bottom - 8), frame.right + 1, bottom + 1, this.paint);
     }
 
     /**
      * 扫码条
+     *
      * @param canvas
      * @param frame
      */
@@ -172,7 +175,7 @@ public final class ViewfinderView extends View {
         RadialGradient radialGradient = new RadialGradient((frame.left + frame.width() / 2), (scannerStart + 5), 360.0F, this.laserColor, shadeColor(this.laserColor), Shader.TileMode.MIRROR);
 //        SweepGradient sweepGradient = new SweepGradient((frame.left + frame.width() / 2), (scannerStart + 10), shadeColor(this.laserColor), this.laserColor);
 //        ComposeShader composeShader = new ComposeShader((Shader)radialGradient, (Shader)linearGradient, PorterDuff.Mode.ADD);
-        this.paint.setShader((Shader)radialGradient);
+        this.paint.setShader((Shader) radialGradient);
         if (scannerStart <= scannerEnd) {
             RectF rectF = new RectF((frame.left + 20), scannerStart, (frame.right - 20), (scannerStart + 10));
             canvas.drawOval(rectF, this.paint);
@@ -191,13 +194,14 @@ public final class ViewfinderView extends View {
 
     /**
      * 扫码框大小
+     *
      * @param canvas
      * @param frame
      */
     private void drawFrame(Canvas canvas, Rect frame) {
         this.paint.setColor(this.frameColor);
-        int top=frame.top;
-        int bottom=frame.bottom;
+        int top = frame.top;
+        int bottom = frame.bottom;
         canvas.drawRect(frame.left, top, (frame.right + 1), (top + 2), this.paint);
         canvas.drawRect(frame.left, (top + 2), (frame.left + 2), (bottom - 1), this.paint);
         canvas.drawRect((frame.right - 1), top, (frame.right + 1), (bottom - 1), this.paint);
@@ -205,8 +209,8 @@ public final class ViewfinderView extends View {
     }
 
     private void drawExterior(Canvas canvas, Rect frame, int width, int height) {
-        int top=frame.top;
-        int bottom=frame.bottom;
+        int top = frame.top;
+        int bottom = frame.bottom;
         this.paint.setColor((this.resultBitmap != null) ? this.resultColor : this.maskColor);
         canvas.drawRect(0.0F, 0.0F, width, top, this.paint);
         canvas.drawRect(0.0F, top, frame.left, (bottom + 1), this.paint);

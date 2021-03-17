@@ -22,11 +22,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            app:corner_color="@color/colorAccent"
+            app:corner_color="@color/colorPrimary"
             app:frame_color="@color/viewfinder_frame"
             app:label_text="二维码/条形码扫描"
             app:label_text_color="@color/colorAccent"
-            app:laser_color="@color/colorAccent"
+            app:laser_color="@color/colorPrimaryDark"
             app:mask_color="@color/viewfinder_mask"
             app:result_color="@color/result_view"
             app:result_point_color="@color/result_point_color" />
