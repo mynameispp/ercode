@@ -41,7 +41,7 @@ public final class CameraManager {
 
     private final boolean useOneShotPreviewCallback;
 
-    private final PreviewCallback previewCallback;
+    private final MyCameraPreviewCallback myCameraPreviewCallback;
 
     private final AutoFocusCallback autoFocusCallback;
 
@@ -69,7 +69,7 @@ public final class CameraManager {
         this.context = context;
         this.configManager = new CameraConfigurationManager(context);
         this.useOneShotPreviewCallback = (Integer.parseInt(Build.VERSION.SDK) > 3);
-        this.previewCallback = new PreviewCallback(this.configManager, this.useOneShotPreviewCallback);
+        this.myCameraPreviewCallback = new MyCameraPreviewCallback(this.configManager, this.useOneShotPreviewCallback);
         this.autoFocusCallback = new AutoFocusCallback();
     }
 
@@ -108,7 +108,7 @@ public final class CameraManager {
             if (!this.useOneShotPreviewCallback)
                 this.camera.setPreviewCallback(null);
             this.camera.stopPreview();
-            this.previewCallback.setHandler(null, 0);
+            this.myCameraPreviewCallback.setHandler(null, 0);
             this.autoFocusCallback.setHandler(null, 0);
             this.previewing = false;
         }
@@ -116,11 +116,11 @@ public final class CameraManager {
 
     public void requestPreviewFrame(Handler handler, int message) {
         if (this.camera != null && this.previewing) {
-            this.previewCallback.setHandler(handler, message);
+            this.myCameraPreviewCallback.setHandler(handler, message);
             if (this.useOneShotPreviewCallback) {
-                this.camera.setOneShotPreviewCallback(this.previewCallback);
+                this.camera.setOneShotPreviewCallback(this.myCameraPreviewCallback);
             } else {
-                this.camera.setPreviewCallback(this.previewCallback);
+                this.camera.setPreviewCallback(this.myCameraPreviewCallback);
             }
         }
     }

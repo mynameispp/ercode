@@ -6,8 +6,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-final class PreviewCallback implements Camera.PreviewCallback {
-    private static final String TAG = PreviewCallback.class.getSimpleName();
+final class MyCameraPreviewCallback implements Camera.PreviewCallback {
+    private static final String TAG = MyCameraPreviewCallback.class.getSimpleName();
 
     private final CameraConfigurationManager configManager;
 
@@ -17,7 +17,7 @@ final class PreviewCallback implements Camera.PreviewCallback {
 
     private int previewMessage;
 
-    PreviewCallback(CameraConfigurationManager configManager, boolean useOneShotPreviewCallback) {
+    MyCameraPreviewCallback(CameraConfigurationManager configManager, boolean useOneShotPreviewCallback) {
         this.configManager = configManager;
         this.useOneShotPreviewCallback = useOneShotPreviewCallback;
     }
